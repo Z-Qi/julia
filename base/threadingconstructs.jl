@@ -97,6 +97,10 @@ macro threads(args...)
         throw(ArgumentError("need an expression argument to @threads"))
     end
     if ex.head === :for
+        # If we are only running with one thread, just run the for loop directly
+        if nthreads() == 1
+            return esc(ex)
+        end
         return _threadsfor(ex.args[1], ex.args[2])
     else
         throw(ArgumentError("unrecognized argument to @threads"))
